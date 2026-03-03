@@ -1,72 +1,98 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>Water Pump Controller - Login</title>
+    <meta charset="UTF-8">
+    <title>Water Pump Controller</title>
 </head>
 <body>
-  <heading>login</heading>
-<div class="login-card">
-<h2>Water Pump Controller</h2>
-<label>User ID</label>
-<input type="text" id="userId" placeholder="Enter User ID">
- <label>Password</label>
-<input type="password" id="password" placeholder="Password">
-<span class="forgot">Forgot Password?</span> <button class="signin-btn" onclick="validateLogin()">Sign in</button>
-<p id="message" class="message"></p>
-  </div>
-  <small>hello!</small>
-  <ol>
-    <li>login</li>
-    <li>dashboard</li>
-  </ol>
-<table>
-  <tr>
-    <th>user id</th>
-    <th>password</th>
-  </tr>
-  <tr>
-    <td>HackClub</td>
-    <td>Pump@123</td>
-  </tr>
-</table>
-<ul>
-  <li>my website is :
-  </li>
-  <li>functional</li>
-  <li>flavorless</li>
-</ul>
+<details>
+<summary><mark><h1>Water Pump Controller</h1></mark></summary>
+<hr>
+<h2>System Control</h2>
+<p>System Status:<span id="systemText">Stopped</span><button onclick="toggleSystem()" id="systemButton">OFF</button><button onclick="emergencyStop()">Emergency Stop</button></p>
+<hr>
+<h2>Pump 1</h2>
+<p>Status:<button onclick="togglePump(1)" id="pump1Button">OFF</button></p>
+<p>Flow:<span id="flow1">0</span> m³/h</p>    
 
+<hr>
+<h2>Pump 2</h2>
+<p>Status:<button onclick="togglePump(2)" id="pump2Button">OFF</button></p>
+<p>Flow:<span id="flow2">0</span> m³/h</p>
+<hr>
+<h2>System Data</h2>
+<p>Total Flow:<span id="totalFlow">0</span> m³/h</p>
+<hr>
+<h2>Data Log</h2>
+<div id="log"></div>
+</details>
 <script>
-const users = [
-  { userId: "Omar",    password: "Pump@123"},
-  { userId: "HackClub",  password: "Pump@123"},
-];
-function validateLogin() {const userId = document.getElementById("userId").value;
-  const password = document.getElementById("password").value;
-const message = document.getElementById("message");
- const userIdRegex = /^[a-zA-Z0-9]+$/;
- const capitalLetter = /[A-Z]/;
- const specialChar = /[^a-zA-Z0-9]/;
-  if (!userIdRegex.test(userId)) {
-  message.textContent = "User ID must contain only letters and numbers.";
-message.className = "message error";return;}
-if (!capitalLetter.test(password) || !specialChar.test(password)) {message.textContent = "Password must include a capital letter and a special character.";message.className = "message error";return}
-const foundUser = users.find(user => user.userId === userId);
-if (!foundUser) {message.textContent = "User ID not found. Access denied.";message.className = "message error";return;}
-if (foundUser.password !== password) {
- message.textContent = "Incorrect password.";
-  message.className = "message error";
- return;
+let systemRunning = false;
+let pumpStatus = {
+1: false,
+2: false
+};
+let pumpFlow = {
+    1: 0,
+    2: 0
+};
+function addLog(text) {
+const logArea = document.getElementById("log");
+const currentTime = new Date().toLocaleTimeString();
+logArea.innerHTML += currentTime + " - " + text + "<br>";
 }
-message.textContent = "Login successful! Redirecting...";
-message.className = "message success";
-localStorage.setItem("isLoggedIn", "true");
-localStorage.setItem("userName", foundUser.userId);
-localStorage.setItem("userRole", foundUser.role);
-setTimeout(() => {window.location.href = "/dashboard";}, 1000);
+function toggleSystem() {
+    systemRunning = !systemRunning;
+const statusText = document.getElementById("systemText");
+const systemBtn  = document.getElementById("systemButton");
+if (systemRunning) {
+ statusText.textContent = "Running";
+systemBtn.textContent  = "ON";
+addLog("System turned ON");
+} else {
+statusText.textContent = "Stopped";
+systemBtn.textContent  = "OFF";
+pumpStatus[1] = false;
+pumpStatus[2] = false;
+        pumpFlow[1] = 0;
+        pumpFlow[2] = 0;
+      updateScreen();
+        addLog("System turned OFF");
+    }
 }
-
+function emergencyStop() {
+    systemRunning = false;
+pumpStatus[1] = false;
+pumpStatus[2] = false;    pumpFlow[1] = 0;
+pumpFlow[2] = 0;
+    document.getElementById("systemText").textContent = "Stopped";
+document.getElementById("systemButton").textContent = "OFF";
+updateScreen();
+addLog("EMERGENCY STOP ACTIVATED");
+}
+function togglePump(pumpNumber) {
+if (!systemRunning) {alert("System is OFF. Turn it on first.");return;}
+    pumpStatus[pumpNumber] = !pumpStatus[pumpNumber];
+if (pumpStatus[pumpNumber]) {
+ pumpFlow[pumpNumber] = 10;
+addLog("Pump " + pumpNumber + " turned ON");
+}
+else {
+ pumpFlow[pumpNumber] = 0;
+addLog("Pump " + pumpNumber + " turned OFF");
+}
+updateScreen();
+}
+function updateScreen() {
+document.getElementById("pump1Button").textContent =
+ pumpStatus[1] ? "ON" : "OFF";
+document.getElementById("pump2Button").textContent =
+pumpStatus[2] ? "ON" : "OFF";
+document.getElementById("flow1").textContent = pumpFlow[1];
+document.getElementById("flow2").textContent = pumpFlow[2];
+let total = pumpFlow[1] + pumpFlow[2];
+document.getElementById("totalFlow").textContent = total;
+}
 </script>
 </body>
 </html>
