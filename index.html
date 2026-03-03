@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Water Pump Controller - Login</title>
+</head>
+<body>
+  <heading>login</heading>
+<div class="login-card">
+<h2>Water Pump Controller</h2>
+<label>User ID</label>
+<input type="text" id="userId" placeholder="Enter User ID">
+ <label>Password</label>
+<input type="password" id="password" placeholder="Password">
+<span class="forgot">Forgot Password?</span> <button class="signin-btn" onclick="validateLogin()">Sign in</button>
+<p id="message" class="message"></p>
+  </div>
+  <small>hello!</small>
+  <ol>
+    <li>login</li>
+    <li>dashboard</li>
+  </ol>
+<table>
+  <tr>
+    <th>user id</th>
+    <th>password</th>
+  </tr>
+  <tr>
+    <td>HackClub</td>
+    <td>Pump@123</td>
+  </tr>
+</table>
+<ul>
+  <li>my website is :
+  </li>
+  <li>functional</li>
+  <li>flavorless</li>
+</ul>
+
+<script>
+const users = [
+  { userId: "Omar",    password: "Pump@123"},
+  { userId: "HackClub",  password: "Pump@123"},
+];
+function validateLogin() {const userId = document.getElementById("userId").value;
+  const password = document.getElementById("password").value;
+const message = document.getElementById("message");
+ const userIdRegex = /^[a-zA-Z0-9]+$/;
+ const capitalLetter = /[A-Z]/;
+ const specialChar = /[^a-zA-Z0-9]/;
+  if (!userIdRegex.test(userId)) {
+  message.textContent = "User ID must contain only letters and numbers.";
+message.className = "message error";return;}
+if (!capitalLetter.test(password) || !specialChar.test(password)) {message.textContent = "Password must include a capital letter and a special character.";message.className = "message error";return}
+const foundUser = users.find(user => user.userId === userId);
+if (!foundUser) {message.textContent = "User ID not found. Access denied.";message.className = "message error";return;}
+if (foundUser.password !== password) {
+ message.textContent = "Incorrect password.";
+  message.className = "message error";
+ return;
+}
+message.textContent = "Login successful! Redirecting...";
+message.className = "message success";
+localStorage.setItem("isLoggedIn", "true");
+localStorage.setItem("userName", foundUser.userId);
+localStorage.setItem("userRole", foundUser.role);
+setTimeout(() => {window.location.href = "/dashboard";}, 1000);
+}
+
+</script>
+</body>
+</html>
